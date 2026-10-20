@@ -2,7 +2,7 @@ import asyncio
 import re
 from engine.tts_engine import Engine as TTSEngine
 from engine.audio_output_engine import Engine as AudioOutputEngine
-from config import Parameters, ApiStartParameters
+from config import Parameters, ApiStartParameters, logger
 
 
 class Engine:
@@ -23,8 +23,11 @@ class Engine:
     def get_parameters(self):
         return self._parameters
 
-    def start(self, parameters: ApiStartParameters):
+    def start(self, parameters: ApiStartParameters, request_id: str):
         if not self._running:
+            logger.set_logger(request_id=request_id)
+            logger.info(f'Запуск engine')
+            logger.debug(parameters.model_dump())  # логирование параметров запуска
             self._running = True
             self._parameters = parameters
 
@@ -47,6 +50,7 @@ class Engine:
                     )
                 )
                 self._tts_engines[model] = engine
+            logger.info(f'engine запущен')
 
     async def say(self, text: str, speaker: str, add: bool = False):
         """
@@ -90,6 +94,7 @@ class Engine:
 
     def stop(self):
         # остановка всех движков
+        logger.info(f'Остановка engine')
         for key in self._tts_engines:
             self._tts_engines[key].stop()
 
@@ -97,13 +102,14 @@ class Engine:
             self._audio_output_engine.stop()
             self._audio_output_engine = None
         self._running = False
+        logger.info(f'engine остановлен')
 
 
 async def main():
     engine = Engine()
     engine.start(parameters=ApiStartParameters(
         samplerate=48000, blocksize=2048, models=['v5_5_ru.pt', 'v3_en.pt']
-    ))
+    ), request_id='#000')
     await engine.say(text='Голос один, я говорю.', speaker='aidar')
     await asyncio.sleep(2)
     await engine.say(text='Voice two, I speaking.', add=True, speaker='en_0')

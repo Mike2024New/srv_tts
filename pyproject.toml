@@ -1,16 +1,18 @@
 [project]
 name = "tts-silero-offline"
-version = "0.9.0"
+version = "0.10.0"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "infrastructure-path-utils @ git+https://github.com/Mike2024New/infrastructure2.git@main#subdirectory=packages/infrastructure_path_utils",
+    "infrastructure-process-utils @ git+https://github.com/Mike2024New/infrastructure2.git@main#subdirectory=packages/infrastructure_process_utils",
     "infrastructure-settings-manager @ git+https://github.com/Mike2024New/infrastructure2.git@main#subdirectory=packages/infrastructure_settings_manager",
     "infrastructure-server @ git+https://github.com/Mike2024New/infrastructure2.git@main#subdirectory=packages/infrastructure_server",
     "infrastructure-builder @ git+https://github.com/Mike2024New/infrastructure2.git@main#subdirectory=packages/infrastructure_builder",
     "infrastructure-http-clients @ git+https://github.com/Mike2024New/infrastructure2.git@main#subdirectory=packages/infrastructure_http_clients",
     "infrastructure-cli-utils @ git+https://github.com/Mike2024New/infrastructure2.git@main#subdirectory=packages/infrastructure_cli_utils",
+    "infrastructure-log-utils @ git+https://github.com/Mike2024New/infrastructure2.git@main#subdirectory=packages/infrastructure_log_utils",
     "fastapi>=0.141.1",
     "numpy==2.5.3",
     "torch==2.12.0",
@@ -18,4 +20,20 @@ dependencies = [
     "sounddevice==0.5.6",
     "websockets==17.1",
     "ru-normalizr>=0.2.0",
+    "loguru>=0.7.3",
+]
+
+# для тестов
+[tool.pytest.ini_options]
+testpaths = [
+    "tests",
+]
+asyncio_mode = "auto"
+pythonpath = [
+    ".",
+]
+
+[dependency-groups]
+dev = [
+    "pytest-asyncio>=1.4.0",
 ]
