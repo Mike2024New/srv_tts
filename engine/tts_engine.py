@@ -5,9 +5,9 @@ from config import settings, Parameters
 from infrastructure_path_utils import FlatJsonManager
 
 # отключение предупреждений pytorch при загрузке silero (там есть свои внутренние ошибки, типа лишних `\` в регулярках
-warnings.filterwarnings('ignore', category=SyntaxWarning)
-warnings.filterwarnings('ignore', category=FutureWarning)
-warnings.filterwarnings("ignore", category=UserWarning)
+warnings.filterwarnings('ignore', category=SyntaxWarning, module='torch')
+warnings.filterwarnings('ignore', category=FutureWarning, module='torch')
+warnings.filterwarnings("ignore", category=UserWarning, module='torch')
 
 
 class Engine:
@@ -31,8 +31,8 @@ class Engine:
         self._check_new_models()  # проверка появились ли новые модели
         model_path = settings.models_dir_prop / self._parameters.model
         self._model = self._torch_package_importer(str(model_path)).load_pickle("tts_models", "model")
-        self._model.to(
-            device=self._torch_device('cpu'))  # пока на cpu, позже можно будет попробовать cuda (нужен cublas)
+        # пока на cpu, позже можно будет попробовать cuda (нужен cublas)
+        self._model.to(device=self._torch_device('cpu'))
 
     async def generate(self, text, callback, speaker='xenia'):
         """Генерация аудио, преобразует текст в pcm (длина текста ограничивается внешними сущностями)"""

@@ -40,17 +40,20 @@ class Engine:
             )
 
             # запуск движков с переданными моделями, например ['v5_5_ru.pt', 'v3_en.pt']
-            for model in parameters.models:
-                engine = TTSEngine()
-                engine.start(
-                    parameters=Parameters(
-                        blocksize=parameters.blocksize,
-                        samplerate=parameters.samplerate,
-                        model=model,
+            try:
+                for model in parameters.models:
+                    engine = TTSEngine()
+                    engine.start(
+                        parameters=Parameters(
+                            blocksize=parameters.blocksize,
+                            samplerate=parameters.samplerate,
+                            model=model,
+                        )
                     )
-                )
-                self._tts_engines[model] = engine
-            logger.info(f'engine запущен')
+                    self._tts_engines[model] = engine
+                logger.info(f'engine запущен')
+            except Exception as err:
+                logger.exception(f'Не удалось запустить engine {err}')
 
     async def say(self, text: str, speaker: str, add: bool = False):
         """
@@ -71,6 +74,7 @@ class Engine:
                     break
 
             if engine is None:
+                logger.error(f'Не найден спикер {speaker}.')
                 raise RuntimeError(f'Не найден спикер {speaker}.')
 
             if not add:
@@ -99,8 +103,11 @@ class Engine:
             self._tts_engines[key].stop()
 
         if self._audio_output_engine:
-            self._audio_output_engine.stop()
-            self._audio_output_engine = None
+            try:
+                self._audio_output_engine.stop()
+                self._audio_output_engine = None
+            except Exception as err:
+                logger.exception(f'Ошибка при остановке engine: {err}')
         self._running = False
         logger.info(f'engine остановлен')
 

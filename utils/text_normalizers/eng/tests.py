@@ -1,5 +1,5 @@
-from app.text_normalizers.eng.main import normalize
-from app.text_normalizers.eng.extends import extension_pipeline
+from utils.text_normalizers.eng.main import normalize
+from utils.text_normalizers.eng.extends import extension_pipeline
 
 
 def test_normalizer_and_extends():
