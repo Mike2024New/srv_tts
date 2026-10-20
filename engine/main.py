@@ -100,14 +100,17 @@ class Engine:
         # остановка всех движков
         logger.info(f'Остановка engine')
         for key in self._tts_engines:
-            self._tts_engines[key].stop()
+            try:
+                self._tts_engines[key].stop()
+            except Exception as err:
+                logger.exception(f'Ошибка при остановке engine {key}: {err}')
 
         if self._audio_output_engine:
             try:
                 self._audio_output_engine.stop()
                 self._audio_output_engine = None
             except Exception as err:
-                logger.exception(f'Ошибка при остановке engine: {err}')
+                logger.exception(f'Ошибка при остановке audio_output: {err}')
         self._running = False
         logger.info(f'engine остановлен')
 
